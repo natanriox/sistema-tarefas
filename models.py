@@ -1,109 +1,56 @@
 import uuid
 from datetime import datetime
-from typing import List, Dict, Optional
-
 
 class Tarefa:
-    def __init__(self, titulo: str, descricao: str, prioridade: int):
+    def __init__(self, titulo, descricao, prioridade):
         self.id = str(uuid.uuid4())[:8]
         self.titulo = titulo
         self.descricao = descricao
-        self.prioridade = prioridade
+        self.prioridade = int(prioridade)
         self.concluida = False
         self.data_criacao = datetime.now().strftime("%d/%m/%Y %H:%M")
-        self.data_conclusao: Optional[str] = None
-
+    
     def marcar_concluida(self):
         self.concluida = True
-        self.data_conclusao = datetime.now().strftime("%d/%m/%Y %H:%M")
-
-    def to_dict(self) -> Dict:
-        return {
-            'id': self.id,
-            'titulo': self.titulo,
-            'descricao': self.descricao,
-            'prioridade': self.prioridade,
-            'concluida': self.concluida,
-            'data_criacao': self.data_criacao,
-            'data_conclusao': self.data_conclusao,
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict):
-        tarefa = cls(data['titulo'], data['descricao'], data.get('prioridade', 0))
-        tarefa.id = data.get('id', tarefa.id)
-        tarefa.concluida = data.get('concluida', False)
-        tarefa.data_criacao = data.get('data_criacao', tarefa.data_criacao)
-        tarefa.data_conclusao = data.get('data_conclusao', None)
-        return tarefa
-
+    
+    def to_dict(self):
+        return self.__dict__
 
 class GerenciadorTarefas:
     def __init__(self):
-        self.tarefas: List[Tarefa] = []
-
+        self.tarefas = []
+    
+    def adicionar_tarefa(self, titulo, descricao, prioridade):
+        tarefa = Tarefa(titulo, descricao, prioridade)
+        self.tarefas.append(tarefa)
+        print(f"✅ Tarefa '{titulo}' adicionada!")  # ← CORRIGIDO!
+    
     def listar_tarefas(self):
         if not self.tarefas:
-            print("Nenhuma tarefa encontrada.")
+            print("📭 Nenhuma tarefa!")
             return
-
-        print("\nSuas Tarefas:")
-        print("-" * 80)
-        for i, tarefa in enumerate(self.tarefas, 1):
-            status = "Concluída" if tarefa.concluida else "Pendente"
-            print(f"{i}. {status} [{tarefa.prioridade}] {tarefa.titulo}")
-            print(f"   {tarefa.descricao}")
-            print(f"   Criada: {tarefa.data_criacao}")
-            if tarefa.concluida and tarefa.data_conclusao:
-                print(f"   Concluída: {tarefa.data_conclusao}")
-            print()
-
+        for i, t in enumerate(self.tarefas, 1):
+            status = "✅" if t.concluida else "⏳"
+            print(f"{i}. {status} [{t.prioridade}] {t.titulo}")
+            print(f"   {t.descricao}")
+    
     def marcar_concluida(self):
         self.listar_tarefas()
-        if not self.tarefas:
-            return
-
-        try:
-            id_tarefa = input("\nID da tarefa a concluir: ").strip()
-            for tarefa in self.tarefas:
-                if tarefa.id == id_tarefa:
-                    tarefa.marcar_concluida()
-                    print("Tarefa marcada como concluída.")
-                    return
-            print("Tarefa não encontrada.")
-        except Exception:
-            print("Erro ao processar.")
-
+        id_t = input("ID: ")
+        for t in self.tarefas:
+            if t.id == id_t:
+                t.marcar_concluida()
+                print("✅ Marcada!")
+                return
+        print("❌ Não encontrada!")
+    
     def remover_tarefa(self):
         self.listar_tarefas()
-        if not self.tarefas:
-            return
-
-        try:
-            id_tarefa = input("\nID da tarefa a remover: ").strip()
-            original = len(self.tarefas)
-            self.tarefas = [t for t in self.tarefas if t.id != id_tarefa]
-            if len(self.tarefas) < original:
-                print("Tarefa removida.")
-            else:
-                print("Tarefa não encontrada.")
-        except Exception:
-            print("Erro ao remover.")
-
+        id_t = input("ID: ")
+        self.tarefas = [t for t in self.tarefas if t.id != id_t]
+        print("🗑️ Removida!")
+    
     def relatorio(self):
         total = len(self.tarefas)
-        concluidas = len([t for t in self.tarefas if t.concluida])
-        pendentes = total - concluidas
-        progresso = (concluidas / total * 100) if total else 0.0
-
-        print("\nRelatório:")
-        print("=" * 40)
-        print(f"Total de tarefas: {total}")
-        print(f"Concluídas: {concluidas}")
-        print(f"Pendentes: {pendentes}")
-        print(f"Progresso: {progresso:.1f}%")
-
-
-
-
-    
+        concl = len([t for t in self.tarefas if t.concluida])
+        print(f"📊 Total: {total} | ✅ {concl} | 📈 {concl/total*100:.0f}%" if total else "📭 Sem tarefas")
