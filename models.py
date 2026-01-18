@@ -23,14 +23,14 @@ class GerenciadorTarefas:
     def adicionar_tarefa(self, titulo, descricao, prioridade):
         tarefa = Tarefa(titulo, descricao, prioridade)
         self.tarefas.append(tarefa)
-        print(f"✅ Tarefa '{titulo}' adicionada!")  # ← CORRIGIDO!
+        print(f" Tarefa '{titulo}' adicionada!")  # ← CORRIGIDO!
     
     def listar_tarefas(self):
         if not self.tarefas:
-            print("📭 Nenhuma tarefa!")
+            print("Nenhuma tarefa!")
             return
         for i, t in enumerate(self.tarefas, 1):
-            status = "✅" if t.concluida else "⏳"
+            status = "Concluída" if t.concluida else "⏳"
             print(f"{i}. {status} [{t.prioridade}] {t.titulo}")
             print(f"   {t.descricao}")
     
@@ -40,17 +40,17 @@ class GerenciadorTarefas:
         for t in self.tarefas:
             if t.id == id_t:
                 t.marcar_concluida()
-                print("✅ Marcada!")
+                print("Marcada!")
                 return
-        print("❌ Não encontrada!")
+        print("Não encontrada!")
     
     def remover_tarefa(self):
         self.listar_tarefas()
         id_t = input("ID: ")
         self.tarefas = [t for t in self.tarefas if t.id != id_t]
-        print("🗑️ Removida!")
+        print("Removida!")
     
     def relatorio(self):
         total = len(self.tarefas)
         concl = len([t for t in self.tarefas if t.concluida])
-        print(f"📊 Total: {total} | ✅ {concl} | 📈 {concl/total*100:.0f}%" if total else "📭 Sem tarefas")
+        print(f"Total: {total} | Concluídas {concl} | Total {concl/total*100:.0f}%" if total else "Sem tarefas")
