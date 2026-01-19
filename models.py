@@ -30,7 +30,7 @@ class GerenciadorTarefas:
             print("Nenhuma tarefa!")
             return
         for i, t in enumerate(self.tarefas, 1):
-            status = "Concluída" if t.concluida else "..."
+            status = "Concluída" if t.concluida else "Pendente"
             print(f"{i}. {status} [{t.prioridade}] {t.titulo}")
             print(f"   {t.descricao}")
     
